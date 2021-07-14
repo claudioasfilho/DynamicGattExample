@@ -28,6 +28,7 @@
  *
  ******************************************************************************/
 #include "app_gattdb.h"
+#include "sl_bluetooth.h"
 
 #define GATTDB_SECURITY_NONE            0x00
 #define GATTDB_FLAG_NONE                0x00
@@ -37,6 +38,9 @@
 // Services
 uint8_t generic_access_service_uuid[] = { 0x00, 0x18 };
 uint8_t device_information_service_uuid[] = { 0x0A, 0x18 };
+uint8_t dynamicService_uuid[] = { 0xc1, 0xb2, 0xc2, 0x86, 0x83, 0x4a, 0x8b, 0xb5, 0x99, 0x46, 0x2b, 0xdc, 0x96, 0xa3, 0x41, 0x0a };
+
+//
 
 service_t services[SERVICES_COUNT] = {
   {
@@ -54,19 +58,31 @@ service_t services[SERVICES_COUNT] = {
     .uuid_len = sizeof(device_information_service_uuid),
     .uuid = device_information_service_uuid,
     .handle = 0xFFFF
+  },
+  {
+    // DYNAMIC SERVICE EXAMPLE
+    .type = sl_bt_gattdb_primary_service,
+    .property = SL_BT_GATTDB_ADVERTISED_SERVICE,
+    .uuid_len = sizeof(dynamicService_uuid),
+    .uuid = dynamicService_uuid,
+    .handle = 0xFFFF
   }
 };
 
 //---------------------------------
 // Characteristics
 uint8_t device_name_characteristic_uuid[] = { 0x00, 0x2A };
-char device_name_characteristic_value[] = "Silabs Example";
+char device_name_characteristic_value[] = "Dynamic Gatt";
 uint8_t appearance_characteristic_uuid[] = { 0x01, 0x2A };
 uint8_t appearance_characteristic_value[] = { 0x00, 0x00 };
 uint8_t manufacturer_name_string_characteristic_uuid[] = { 0x29, 0x2A };
 char manufacturer_name_string_characteristic_value[] = "Silicon Labs";
 uint8_t system_id_characteristic_uuid[] = { 0x23, 0x2A };
 uint8_t system_id_characteristic_value[8];
+
+uint8_t DynamicChar_uuid[] = { 0x72, 0x3c, 0xa1, 0xf3, 0x80, 0x36, 0xc3, 0xa4, 0xd0, 0x40, 0x3b, 0x44, 0x96, 0xb1, 0x6c, 0xbb };
+uint8_t DynamicChar_characteristic_value[2];
+uint16_t DynamicChar;
 
 characteristic_t characteristics[CHARACTERISTICS_COUNT] = {
   {
@@ -123,6 +139,20 @@ characteristic_t characteristics[CHARACTERISTICS_COUNT] = {
     .maxlen = sizeof(system_id_characteristic_value),
     .value_len = sizeof(system_id_characteristic_value),
     .value = system_id_characteristic_value,
+    .handle = 0xFFFF
+  },
+  {
+    // DYNAMIC CHAR EXAMPLE
+    .service = &services[DYNAMICSERVICE],
+    .property = SL_BT_GATTDB_CHARACTERISTIC_READ,
+    .security = GATTDB_SECURITY_NONE,
+    .flag = GATTDB_FLAG_NONE,
+    .uuid_len = sizeof(DynamicChar_uuid),
+    .uuid = DynamicChar_uuid,
+    .value_type = sl_bt_gattdb_fixed_length_value,
+    .maxlen = sizeof(DynamicChar_characteristic_value),
+    .value_len = sizeof(DynamicChar_characteristic_value),
+    .value = DynamicChar_characteristic_value,
     .handle = 0xFFFF
   }
 };
